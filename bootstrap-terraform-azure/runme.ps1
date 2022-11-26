@@ -42,22 +42,27 @@ function main
     Write-Host "Creating resource group: " $rg_name_joined -ForegroundColor Magenta
     New-AzResourceGroup -Name $rg_name_joined `
                         -Location $configVars.az_region
-    
+    #create tags
     $resource = Get-AzResourceGroup -Name $rg_name_joined
     New-AzTag -ResourceId $resource.resourceid -Tag $tag1
     Update-AzTag -ResourceId $resource.ResourceId -Tag $tag2 -Operation Merge
 
-#create a new storage account
-$sa_name_joined = $configVars.sa_name + $configVars.ref
-write-host ""
-Write-Host "Creating storage account: " $sa_name_joined -ForegroundColor Magenta
-New-AzStorageAccount -ResourceGroupName $rg_name_joined -Name $sa_name_joined -Location $configVars.az_region -SkuName Standard_LRS -ErrorAction Stop
+    Start-Sleep -Seconds 15
 
-#create a new storage account container
-write-host ""
-Write-Host "Creating storage account container: " $configvars.sacon_name -ForegroundColor Magenta
-$ctx = New-AzStorageContext -StorageAccountName $sa_name_joined -UseConnectedAccount
-New-AzStorageContainer -Name $configVars.sacon_name -Permission Off -Context $ctx -ErrorAction Stop
+    #create lock
+    New-AzResourceLock -LockName "CanNotDelete" -LockLevel CanNotDelete -LockNotes "Created by bootstrap-terraform-azure" -ResourceGroupName $rg_name_joined -Confirm:$false -force
+    
+    #create a new storage account
+    $sa_name_joined = $configVars.sa_name + $configVars.ref
+    write-host ""
+    Write-Host "Creating storage account: " $sa_name_joined -ForegroundColor Magenta
+    New-AzStorageAccount -ResourceGroupName $rg_name_joined -Name $sa_name_joined -Location $configVars.az_region -SkuName Standard_LRS -ErrorAction Stop
+
+    #create a new storage account container
+    write-host ""
+    Write-Host "Creating storage account container: " $configvars.sacon_name -ForegroundColor Magenta
+    $ctx = New-AzStorageContext -StorageAccountName $sa_name_joined -UseConnectedAccount
+    New-AzStorageContainer -Name $configVars.sacon_name -Permission Off -Context $ctx -ErrorAction Stop
 }
 
 main
