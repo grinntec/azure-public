@@ -36,33 +36,59 @@ function main
 
     #create resource group
     $rg_name_joined = $configVars.rg_name + $configVars.ref
-    $tag1 = $configVars.tag1 | ConvertFrom-StringData
-    $tag2 = $configVars.tag2 | ConvertFrom-StringData
-        
+    Write-Host ""
     Write-Host "Creating resource group: " $rg_name_joined -ForegroundColor Magenta
     New-AzResourceGroup -Name $rg_name_joined `
                         -Location $configVars.az_region
     #create tags
+    Write-Host "Creating tags" -ForegroundColor Magenta
+    $tag1 = $configVars.tag1 | ConvertFrom-StringData
+    $tag2 = $configVars.tag2 | ConvertFrom-StringData
     $resource = Get-AzResourceGroup -Name $rg_name_joined
-    New-AzTag -ResourceId $resource.resourceid -Tag $tag1
-    Update-AzTag -ResourceId $resource.ResourceId -Tag $tag2 -Operation Merge
+    New-AzTag   -ResourceId $resource.resourceid `
+                -Tag $tag1
+    
+    Update-AzTag -ResourceId $resource.ResourceId `
+                 -Tag $tag2 `
+                 -Operation Merge
 
     Start-Sleep -Seconds 15
 
     #create lock
-    New-AzResourceLock -LockName "CanNotDelete" -LockLevel CanNotDelete -LockNotes "Created by bootstrap-terraform-azure" -ResourceGroupName $rg_name_joined -Confirm:$false -force
+    Write-Host "Creating resource group level CanNotDeletelock" -ForegroundColor Magenta
+    New-AzResourceLock  -LockName "CanNotDelete" `
+                        -LockLevel CanNotDelete `
+                        -LockNotes "Created by bootstrap-terraform-azure" `
+                        -ResourceGroupName $rg_name_joined `
+                        -Confirm:$false `
+                        -force
     
     #create a new storage account
     $sa_name_joined = $configVars.sa_name + $configVars.ref
     write-host ""
     Write-Host "Creating storage account: " $sa_name_joined -ForegroundColor Magenta
-    New-AzStorageAccount -ResourceGroupName $rg_name_joined -Name $sa_name_joined -Location $configVars.az_region -SkuName Standard_LRS -ErrorAction Stop
+    New-AzStorageAccount -ResourceGroupName $rg_name_joined `
+                         -Name $sa_name_joined `
+                         -Location $configVars.az_region `
+                         -SkuName Standard_LRS `
+                         -ErrorAction Stop
 
     #create a new storage account container
     write-host ""
-    Write-Host "Creating storage account container: " $configvars.sacon_name -ForegroundColor Magenta
+    Write-Host "Creating storage account container: " $configvars.sa_con_name -ForegroundColor Magenta
     $ctx = New-AzStorageContext -StorageAccountName $sa_name_joined -UseConnectedAccount
-    New-AzStorageContainer -Name $configVars.sacon_name -Permission Off -Context $ctx -ErrorAction Stop
+    New-AzStorageContainer  -Name $configVars.sa_con_name `
+                            -Permission Off `
+                            -Context $ctx `
+                            -ErrorAction Stop
+
+    #create a new storage account container
+    $kv_name_joined = $configVars.kv_name + $configVars.ref
+    write-host ""
+    Write-Host "Creating key vault: " $kv_name_joined -ForegroundColor Magenta
+    New-AzKeyVault  -Name $kv_name_joined `
+                    -ResourceGroupName $rg_name_joined `
+                    -Location $configVars.az_region
 }
 
 main
