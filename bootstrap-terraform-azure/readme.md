@@ -1,4 +1,4 @@
-> terraform-bootstrap-azure
+`terraform-bootstrap-azure`
 
 This tool will setup storage in the given Azure subscription that can be used to host Terraform state files for resources built in the subscription.
 
@@ -29,7 +29,7 @@ Edit the file `the-environment.env` and enter data specific to your environment.
 |sa_name|satfstate
 
 # Run the tool
-With the environment variables defined you just need to run the `runme.ps1` to build them. This uses Azure PowerShell CLI commands for the whole process, including the initial Azure log in to Azure and setting the subscription context.
+With the environment variables defined you just need to run the `runme.ps1` to build them. This uses Azure PowerShell CLI commands for the whole process, including the initial Azure log in to Azure and setting the subscription context based on the subscription you defined in the environment variables.
 
 **Steps**
 The `runme.ps1` script is built using functions. Each function performs specific tasks to either prepare the variable values or execute the Azure PowerShell CLI commands.
