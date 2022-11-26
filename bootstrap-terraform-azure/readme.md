@@ -16,7 +16,7 @@ Edit the file `the-environment.env` and enter data specific to your environment.
 **Edit these value**
 |name|value
 | ---|---
-|ref|the name of project or app
+|ref|the name of project or app but no special characters
 |az_region|the region where resources will be created
 |az_sub_id|the subscription id
 |az_tenant_id|the tenant id
