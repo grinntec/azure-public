@@ -82,7 +82,7 @@ function main
                             -Context $ctx `
                             -ErrorAction Stop
 
-    #create a new storage account container
+    #create a new key vault
     $kv_name_joined = $configVars.kv_name + $configVars.ref
     write-host ""
     Write-Host "Creating key vault: " $kv_name_joined -ForegroundColor Magenta
@@ -96,19 +96,32 @@ function main
     Write-Host "Creating service principal: " $sp_name_joined -ForegroundColor Magenta
     $subId = (Get-AzContext).Subscription.id
     $tenId = (Get-AzContext).Tenant.id
-    $sp = New-AzADServicePrincipal -DisplayName $sp_name_joined -Role "Contributor"
+    $sp = New-AzADServicePrincipal  -DisplayName $sp_name_joined `
+                                    -Role "Contributor"
     
     #write values to key vault
     $sp.AppId
     $sp.PasswordCredentials.SecretText
+    
     $ARM_CLIENT_ID = ConvertTo-SecureString $sp.AppId -AsPlainText -Force
-    Set-AzKeyVaultSecret -VaultName kvtfstategrinntecsandbox -Name "ARMCLIENTID" -SecretValue $ARM_CLIENT_ID
+    Set-AzKeyVaultSecret -VaultName $kv_name_joined `
+                         -Name "ARMCLIENTID" `
+                         -SecretValue $ARM_CLIENT_ID
+    
     $ARM_CLIENT_SECRET = ConvertTo-SecureString $sp.PasswordCredentials.SecretText -AsPlainText -Force
-    Set-AzKeyVaultSecret -VaultName kvtfstategrinntecsandbox -Name "ARMCLIENTSECRET" -SecretValue $ARM_CLIENT_SECRET
+    Set-AzKeyVaultSecret -VaultName $kv_name_joined `
+                         -Name "ARMCLIENTSECRET" `
+                         -SecretValue $ARM_CLIENT_SECRET
+    
     $ARM_SUBSCRIPTION_ID = ConvertTo-SecureString $subId -AsPlainText -Force
-    Set-AzKeyVaultSecret -VaultName kvtfstategrinntecsandbox -Name "ARMSUBSCRIPTIONID" -SecretValue $ARM_SUBSCRIPTION_ID
+    Set-AzKeyVaultSecret -VaultName $kv_name_joined `
+                         -Name "ARMSUBSCRIPTIONID" `
+                         -SecretValue $ARM_SUBSCRIPTION_ID
+    
     $ARM_TENANT_ID = ConvertTo-SecureString $tenId -AsPlainText -Force
-    Set-AzKeyVaultSecret -VaultName kvtfstategrinntecsandbox -Name "ARMTENANTID" -SecretValue $ARM_TENANT_ID
+    Set-AzKeyVaultSecret -VaultName $kv_name_joined `
+                         -Name "ARMTENANTID" `
+                         -SecretValue $ARM_TENANT_ID
 }
 
 main
