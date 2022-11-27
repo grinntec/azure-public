@@ -13,13 +13,17 @@ There are three files. The first is this file you are reading `readme.md` which 
 # Setting environment variables
 Edit the file `the-environment.env` and enter data specific to your environment. These values are puled into the process and used to generate resource names or specific the target subscription.
 
-**Edit these value**
+**Edit these values**
 |name|value
 | ---|---
 |ref|the name of project or app but no special characters
 |az_region|the region where resources will be created
 |az_sub_id|the subscription id
 |az_tenant_id|the tenant id
+|tag1|this is the environment tag; prod, dev or stage
+|tag2|this is the createdby tag; 
+
+
 
 **Edit these if you want but not required**
 |name|value
