@@ -82,7 +82,7 @@ function main
                             -Context $ctx `
                             -ErrorAction Stop
 
-    #create a new storage account container
+    #create a new key vault
     $kv_name_joined = $configVars.kv_name + $configVars.ref
     write-host ""
     Write-Host "Creating key vault: " $kv_name_joined -ForegroundColor Magenta
