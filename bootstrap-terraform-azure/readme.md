@@ -69,13 +69,6 @@ This reads the `the-environment.env` file to define the parameter values. Then y
 
 > 
 
-# File & folder structure
-```shell
-root
-|   readme.md
-|   runme.ps1
-|   the-environment.env
-```
 # References
 https://www.mytechramblings.com/posts/how-to-bootstrap-terraform-and-azdo-to-start-deploying-iac-to-azure/
 https://github.com/karlospn/bootstrapping-azure-subscription-and-azdo-project-for-terraform
